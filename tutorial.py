@@ -7,7 +7,8 @@ WIDTH, HEIGHT = 800, 800
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")
 WHITE = (255, 255, 255)
-YELLOW =(255, 255, 0)
+YELLOW = (255, 255, 0)
+BLUE = (100, 149, 237)
 
 
 # Planet Class
@@ -47,10 +48,6 @@ class Planet:
         y = self.y * self.SCALE + HEIGHT /2
         pygame.draw.circle(win, self.color, (x, y), self.radius)
 
-
-
-
-
 # Event Loop
 def main():
     run = True
@@ -61,7 +58,9 @@ def main():
     sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
     sun.sun = True
 
-    planets = [sun]
+    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
+
+    planets = [sun, earth]
 
     while run:
         # Maximum of 60 fps
