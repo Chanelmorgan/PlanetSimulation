@@ -6,9 +6,12 @@ pygame.init()
 WIDTH, HEIGHT = 800, 800
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")
+
+# colors used in the planets
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 BLUE = (100, 149, 237)
+RED = (188, 29, 50)
 
 
 # Planet Class
@@ -22,7 +25,7 @@ class Planet:
     G = 6.67428e-11
 
     # Scale for the movement of the planets in the pygame window
-    SCALE = 250 / AU  # 1AU = 100 pixels
+    SCALE = 240 / AU  # 1AU = 100 pixels
 
     # How much of time we want to simulate
     TIMESTEP = 3600 * 24 # 1 day
@@ -55,12 +58,13 @@ def main():
     # makes sure the frame rate won't go past a certain rate
     clock = pygame.time.Clock()
 
+    # initialising planets with the real values
     sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
     sun.sun = True
-
     earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
+    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
 
-    planets = [sun, earth]
+    planets = [sun, earth, mars]
 
     while run:
         # Maximum of 60 fps
