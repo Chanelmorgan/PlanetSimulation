@@ -7,6 +7,7 @@ WIDTH, HEIGHT = 800, 800
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")
 WHITE = (255, 255, 255)
+YELLOW =(255, 255, 0)
 
 
 # Planet Class
@@ -57,14 +58,20 @@ def main():
     # makes sure the frame rate won't go past a certain rate
     clock = pygame.time.Clock()
 
+    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
+    sun.sun = True
+
+    planets = [sun]
+
     while run:
         # Maximum of 60 fps
         clock.tick(60)
-        #WINDOW.fill(WHITE)
-        #pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+        for planet in planets:
+            planet.draw(WINDOW)
+        pygame.display.update()
     pygame.quit()
 
 
