@@ -12,6 +12,7 @@ WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 BLUE = (100, 149, 237)
 RED = (188, 29, 50)
+DARK_GREY = (80, 78, 81)
 
 
 # Planet Class
@@ -63,8 +64,9 @@ def main():
     sun.sun = True
     earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
     mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
+    mercury = Planet(0.387 * Planet.AU, 0, DARK_GREY, 0.33 * 10**24)
 
-    planets = [sun, earth, mars]
+    planets = [sun, earth, mars, mercury]
 
     while run:
         # Maximum of 60 fps
