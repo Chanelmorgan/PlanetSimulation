@@ -1,5 +1,6 @@
 import pygame
 import math
+
 pygame.init()
 
 # Setting up the window
@@ -17,7 +18,6 @@ DARK_GREY = (80, 78, 81)
 
 # Planet Class
 class Planet:
-
     # Astronomical units - is approximately equal to the distance to the earth from the sun
     # ( we want it in meters we are using times 1000)
     AU = 149.6e6 * 1000
@@ -29,7 +29,7 @@ class Planet:
     SCALE = 240 / AU  # 1AU = 100 pixels
 
     # How much of time we want to simulate
-    TIMESTEP = 3600 * 24 # 1 day
+    TIMESTEP = 3600 * 24  # 1 day
 
     def __init__(self, x, y, radius, color, mass):
         self.x = x
@@ -49,8 +49,48 @@ class Planet:
 
     def draw(self, win):
         x = self.x * self.SCALE + WIDTH / 2
-        y = self.y * self.SCALE + HEIGHT /2
+        y = self.y * self.SCALE + HEIGHT / 2
         pygame.draw.circle(win, self.color, (x, y), self.radius)
+
+    def attraction(self, other):
+        # calculating the distance between the two objects
+        other_x, other_y = other.x, other.y
+        distance_x = other_x - self.x
+        distance_y = other_y - self.y
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+        if other.sun:
+            self.distance_to_sun = distance
+
+        # force of attraction ( this is the straight line force )
+        force = self.G * self.mass * other.mass / distance ** 2
+
+        # breaking the force down into the x and the y forces
+        theta = math.atan2(distance_y, distance_x)
+        force_x = math.cos(theta) * force
+        force_y = math.sin(theta) * force
+        return force_x, force_y
+
+    # have to calculate the force of attraction for all the objects
+    def update_position(self, planets):
+        total_fx = total_fy = 0
+        for planet in planets:
+            if self == planet:
+                # this would give division by 0 error
+                continue
+            fx, fy = self.attraction(planet)
+            total_fx += fx
+            total_fy += fy
+
+        # Force = Mass/Acceleration ( using this to solve for the acceleration a = f/m )
+        self.x_vel = total_fx / self.mass * self.TIMESTEP
+        self.y_vel += total_fy / self.mass * self.TIMESTEP
+
+        # displacement (distance)
+        self.x += self.x_vel * self.TIMESTEP
+        self.y += self.y_vel * self.TIMESTEP
+        self.orbit.append((self.x, self.y))
+
 
 # Event Loop
 def main():
@@ -60,22 +100,32 @@ def main():
     clock = pygame.time.Clock()
 
     # initialising planets with the real values
-    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
+    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10 ** 30)
     sun.sun = True
-    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
-    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
-    mercury = Planet(0.387 * Planet.AU, 0, DARK_GREY, 0.33 * 10**24)
-    venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10**24)
 
-    planets = [sun, earth, mars, mercury,venus]
+    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10 ** 24)
+    earth.y_vel = 29.783 * 1000
+
+    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10 ** 23)
+    mars.y_vel = 24.077 * 1000
+
+    mercury = Planet(0.387 * Planet.AU, 0, 8, DARK_GREY, 0.33 * 10 ** 24)
+    mercury.y_vel = 47.4 * 1000
+
+    venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10 ** 24)
+    venus.y_vel = -35.02 * 1000
+
+    planets = [sun, earth, mars, mercury, venus]
 
     while run:
         # Maximum of 60 fps
         clock.tick(60)
+        WINDOW.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
         for planet in planets:
+            planet.update_position(planets)
             planet.draw(WINDOW)
         pygame.display.update()
     pygame.quit()
